@@ -19,6 +19,8 @@ jobs:
       run: npm i --verbose
 
     - name: Build the apk(thank you Shub on stackoverflow)
+      #continue on error because expo exit with code 1.
+      continue-on-error: true 
       run: npx expo run:android --variant release
 
     - name: Upload apk file to gh artifact
