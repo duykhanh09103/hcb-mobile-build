@@ -1,0 +1,28 @@
+name: Build android apk on dispath
+on:
+  workflow_dispatch:
+
+jobs:
+ build:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Get nodejs(use lts because why not xD)
+      uses: actions/setup-node@v4
+      with:
+        node-version: lts
+        cache: 'npm'
+    
+    - name: Install depidencies
+      run: npm i --verbose
+
+    - name: Build the apk(thank you Shub on stackoverflow)
+      run: npx expo run:android --variant release
+
+    - name: Upload apk file to gh artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: android\app\build\outputs\apk\release\*
