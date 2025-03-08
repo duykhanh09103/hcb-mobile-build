@@ -35,9 +35,9 @@ jobs:
         run: cd ./android && ./gradlew assembleRelease
 
       - name: Aight just tell me where r u
-        run: ls
+        run: ls ./android
       - name: Upload apk file to gh artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: $HOME/hcb-mobile-build/android/build/*
+          path: android/build/*
