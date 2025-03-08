@@ -17,10 +17,17 @@ jobs:
     
     - name: Install depidencies
       run: npm i --verbose
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+       java-version: '17'
+       distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
 
     - name: Build the apk(thank you Shub on stackoverflow)
-      #continue on error because expo exit with code 1.
-      continue-on-error: true 
       run: npx expo run:android --variant release
 
     - name: Upload apk file to gh artifact
