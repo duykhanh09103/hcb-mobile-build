@@ -27,14 +27,11 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: 🏗 Setup EAS
-      uses: expo/expo-github-action@v8
-      with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}  
+    - name: Setup prebuild with expo
+      uses: npx expo prebuild
 
-    - name: Build the apk(thank you Shub on stackoverflow)
-      run: eas build -p android --local --non-interactive --output builds/build.apk
+    - name: Build the apk(IM STARTING TO LOSE MY MIND)
+      run: cd ./android && ./gradlew assembleRelease
 
     - name: Upload apk file to gh artifact
       uses: actions/upload-artifact@v4
