@@ -27,11 +27,17 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
+    - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}  
+
     - name: Build the apk(thank you Shub on stackoverflow)
-      run: npx expo run:android --variant release
+      run: eas build -p android --local --non-interactive --output builds/build.apk
 
     - name: Upload apk file to gh artifact
       uses: actions/upload-artifact@v4
       with:
         name: release-apk
-        path: android\app\build\outputs\apk\release\*
+        path: builds/build.apk
