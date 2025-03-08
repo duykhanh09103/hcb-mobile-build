@@ -12,7 +12,7 @@ jobs:
     - name: Get nodejs(use lts because why not xD)
       uses: actions/setup-node@v4
       with:
-        node-version: lts/latest
+        node-version: lts/*
         cache: 'npm'
     
     - name: Install depidencies
