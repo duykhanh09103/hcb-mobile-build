@@ -3,38 +3,38 @@ on:
   workflow_dispatch:
 
 jobs:
- build:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Get nodejs(use lts because why not xD)
-      uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-        cache: 'npm'
-    
-    - name: Install depidencies
-      run: npm i --verbose
-    
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-       java-version: '17'
-       distribution: 'temurin'
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      - name: Get nodejs(use lts because why not xD)
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "npm"
 
-    - name: Setup prebuild with expo
-      uses: npx expo prebuild
+      - name: Install depidencies
+        run: npm i --verbose
 
-    - name: Build the apk(IM STARTING TO LOSE MY MIND)
-      run: cd ./android && ./gradlew assembleRelease
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
 
-    - name: Upload apk file to gh artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-apk
-        path: builds/build.apk
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup prebuild with expo
+        uses: npx expo prebuild
+
+      - name: Build the apk(IM STARTING TO LOSE MY MIND)
+        run: cd ./android && ./gradlew assembleRelease
+
+      - name: Upload apk file to gh artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: builds/build.apk
