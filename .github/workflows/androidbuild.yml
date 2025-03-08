@@ -28,7 +28,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup prebuild with expo
-        uses: npx expo prebuild
+        run: npx expo prebuild
 
       - name: Build the apk(IM STARTING TO LOSE MY MIND)
         run: cd ./android && ./gradlew assembleRelease
