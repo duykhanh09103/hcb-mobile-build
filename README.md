@@ -1,3 +1,4 @@
+
 <div align="center">
 
 <picture>
@@ -9,6 +10,8 @@
 
 </div>
 
+> [!IMPORTANT]
+> Keep in mind this is not hcb approved(at least rn). I just fork the repo and added ci, prob will improve it later
 ## Setup
 
 HCB Mobile connects to HCB throught the v4 API.
