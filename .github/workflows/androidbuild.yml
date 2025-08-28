@@ -26,6 +26,9 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+
+    - name: pre build with expo
+      run: npx expo prebuild --clean
     
     - name: try another method
       run: npx react-native build-android --mode=release
