@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo, { NetInfoState } from "@react-native-community/netinfo";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useFocusEffect, useTheme } from "@react-navigation/native";
@@ -29,11 +30,9 @@ import ReorderableList, {
 } from "react-native-reorderable-list";
 import useSWR, { preload, useSWRConfig } from "swr";
 
-import Transaction from "../components/Transaction";
 import { logError } from "../lib/errorUtils";
 import { StackParamList } from "../lib/NavigatorParamList";
 import useReorderedOrgs from "../lib/organization/useReorderedOrgs";
-import { PaginatedResponse } from "../lib/types/HcbApiObject";
 import Invitation from "../lib/types/Invitation";
 import Organization, { OrganizationExpanded } from "../lib/types/Organization";
 import ITransaction from "../lib/types/Transaction";
@@ -76,7 +75,7 @@ const Event = memo(function Event({
   isActive,
   style,
   invitation,
-  showTransactions = false,
+  // showTransactions = false,
 }: ViewProps & {
   event: Organization;
   hideBalance?: boolean;
@@ -89,17 +88,47 @@ const Event = memo(function Event({
   const { data } = useSWR<OrganizationExpanded>(
     hideBalance ? null : `organizations/${event.id}`,
   );
-  const { data: transactions, isLoading: transactionsIsLoading } = useSWR<
-    PaginatedResponse<ITransaction>
-  >(showTransactions ? `organizations/${event.id}/transactions?limit=5` : null);
+  // const { data: transactions, isLoading: transactionsIsLoading } = useSWR<
+  //   PaginatedResponse<ITransaction>
+  // >(showTransactions ? `organizations/${event.id}/transactions?limit=5` : null);
 
   const { colors: themeColors } = useTheme();
-  const { initialize } = useStripeTerminal({});
-  useEffect(() => {
-    initialize();
-  }, []);
+  const terminal = useStripeTerminal();
+  const [terminalInitialized, setTerminalInitialized] = useState(false);
+
   const color = orgColor(event.id);
   const isDark = useIsDark();
+
+  useEffect(() => {
+    (async () => {
+      if (event && !event.playground_mode && !terminalInitialized) {
+        try {
+          const isTapToPayEnabled =
+            await AsyncStorage.getItem("isTapToPayEnabled");
+          if (isTapToPayEnabled) {
+            return;
+          }
+          await terminal.initialize();
+          setTerminalInitialized(true);
+          // Only call supportsReadersOfType if initialize did not throw
+          const supported = await terminal.supportsReadersOfType({
+            deviceType: "tapToPay",
+            discoveryMethod: "tapToPay",
+          });
+          await AsyncStorage.setItem(
+            "isTapToPayEnabled",
+            supported ? "true" : "false",
+          );
+        } catch (error) {
+          logError("Stripe Terminal initialization error", error, {
+            context: { organizationId: event?.id },
+          });
+        }
+      } else if (!event || event.playground_mode) {
+        setTerminalInitialized(false);
+      }
+    })();
+  }, [event, terminal, terminalInitialized]);
 
   const contentView = (
     <>
@@ -108,6 +137,7 @@ const Event = memo(function Event({
           <Image
             source={{ uri: event.icon }}
             cachePolicy="memory-disk"
+            contentFit="scale-down"
             style={{
               width: 40,
               height: 40,
@@ -180,7 +210,7 @@ const Event = memo(function Event({
           color={palette.muted}
         />
       </View>
-      {transactions?.data && transactions.data.length >= 1 ? (
+      {/* {transactions?.data && transactions.data.length >= 1 ? (
         <>
           {transactions.data.map((tx, index) => (
             <Transaction
@@ -207,7 +237,7 @@ const Event = memo(function Event({
         </>
       ) : transactionsIsLoading ? (
         <ActivityIndicator style={{ marginVertical: 20 }} />
-      ) : null}
+      ) : null} */}
     </>
   );
 
@@ -220,27 +250,41 @@ const Event = memo(function Event({
       activeOpacity={isActive ? 1 : 0.7}
     >
       {event.background_image ? (
-        <Image
-          source={{ uri: event.background_image }}
-          cachePolicy="memory-disk"
+        <View
           style={{
             backgroundColor: themeColors.card,
             borderRadius: 10,
             overflow: "hidden",
+            position: "relative",
           }}
-          contentFit="cover"
         >
+          <Image
+            source={{ uri: event.background_image }}
+            cachePolicy="memory-disk"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: "100%",
+              height: "100%",
+            }}
+            contentFit="cover"
+          />
           <View
             style={{
               backgroundColor: isDark
                 ? "rgba(37, 36, 41, 0.85)"
                 : "rgba(255, 255, 255, 0.7)",
               borderRadius: 10,
+              position: "relative",
+              zIndex: 1,
             }}
           >
             {contentView}
           </View>
-        </Image>
+        </View>
       ) : (
         <View
           style={StyleSheet.compose(

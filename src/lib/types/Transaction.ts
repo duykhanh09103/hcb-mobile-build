@@ -11,6 +11,7 @@ export enum TransactionType {
   AchTransfer = "300",
   Wire = "310",
   Paypal = "350",
+  Wise = "360",
   Check = "400",
   IncreaseCheck = "401",
   CheckDeposit = "402",
@@ -172,6 +173,15 @@ export interface TransactionCheckDeposit extends TransactionBase {
   check_deposit: CheckDeposit;
 }
 
+export interface ExpensePayout {
+  report_id: string;
+}
+
+export interface TransactionExpensePayout extends TransactionBase {
+  code: TransactionType.ExpensePayout;
+  expense_payout: ExpensePayout;
+}
+
 // |
 // |
 // v this is cool, i should finish this
@@ -186,6 +196,7 @@ type Transaction =
   | TransactionCheck
   | TransactionDonation
   | TransactionCardCharge
+  | TransactionExpensePayout
   | TransactionBase;
 
 export type TransactionWithoutId = Omit<Transaction, "id"> & {
