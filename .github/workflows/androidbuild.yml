@@ -26,12 +26,16 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+    
+    - name: try another method
+      run: npx react-native build-android --mode=release
 
-    - name: Build the apk(thank you Shub on stackoverflow)
-      run: npx expo run:android --variant release
+    #- name: Build the apk(thank you Shub on stackoverflow) update:doesnt work anymore
+     # run: npx expo run:android --variant release
 
-    - name: Upload apk file to gh artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-apk
-        path: android\app\build\outputs\apk\release\*
+
+    #- name: Upload apk file to gh artifact
+    #  uses: actions/upload-artifact@v4
+    #  with:
+    #    name: release-apk
+    #    path: android\app\build\outputs\apk\release\*

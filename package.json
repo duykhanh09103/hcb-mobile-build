@@ -95,6 +95,7 @@
     "use-debounce": "^10.0.4"
   },
   "devDependencies": {
+    "@react-native-community/cli": "latest",
     "@babel/core": "^7.22.11",
     "@tsconfig/react-native": "^3.0.2",
     "@types/jest": "^29.5.5",
